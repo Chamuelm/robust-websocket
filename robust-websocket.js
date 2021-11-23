@@ -150,6 +150,10 @@
       realWs = new WebSocket(newUrl, protocols || undefined)
       realWs.binaryType = self.binaryType
 
+      if (opts.reconnectOnTimeout) {
+        this.addEventListener('timeout', reconnect);
+      }
+
       attempts++
       self.dispatchEvent(Object.assign(new CustomEvent('connecting'), {
         attempts: attempts,
@@ -204,7 +208,11 @@
 
     // Create and connect the WebSocket when the instance is instantiated.
     // Defaults to true to match standard WebSocket behavior
-    automaticOpen: true
+    automaticOpen: true,
+
+    // Try to reconnect on 'timeout' event which may happen when we try to 
+    // start a new websocket
+    reconnectOnTimeout: false
   }
 
   RobustWebSocket.prototype.binaryType = 'blob'
